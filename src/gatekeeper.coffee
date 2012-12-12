@@ -2,7 +2,7 @@
   _matcher = undefined
   _level = 0
   _id = 0
-  handlers = {}
+  _handlers = {}
   _gk_instances = {}
 
   _addEvent = (gk, type, cb) ->
@@ -14,21 +14,21 @@
     e.stopPropagation()
 
   _getMatcher = (el) ->
-    _matcher if _matcher
+    return _matcher if _matcher
 
-    _matcher ?= element.matches
-    _matcher ?= element.webkitMatchesSelector
+    _matcher ?= el.matches
+    _matcher ?= el.webkitMatchesSelector
 
     _matcher = Gk.matchesSelector unless _matcher
 
     _matcher
 
   _matchesSelector = (el, selector, bound_el) ->
-    bound_el if selector is 'root'
+    return bound_el if selector is 'root'
 
-    return if element is bound_el
+    return if el is bound_el
 
-    element if _getMatcher(el).call el, selector
+    return el if _getMatcher(el).call el, selector
 
     if el.parentNode
       _level--
@@ -69,7 +69,7 @@
       if match and Gk.matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
         _level++
         _handlers[id][type][selector].match = match
-        matches[__level] = _handlers[id][type][selector]
+        matches[_level] = _handlers[id][type][selector]
 
     e.stopPropagation = ->
       e.cancelBubble = true
@@ -117,7 +117,7 @@
         _id++
         _gk_instances[_id] = new Gk ele, _id
 
-        return _gk_instances[_ek]
+        return _gk_instances[_id]
 
       @ele= ele
       @id = _id
