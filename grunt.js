@@ -46,7 +46,7 @@ module.exports = function(grunt) {
     },
     watch: {
       files: '<config:lint.files>',
-      tasks: 'buster'
+      tasks:['buster', 'coffee', 'clean']
     },
     jshint: {
       options: {
