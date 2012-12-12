@@ -16,11 +16,11 @@ module.exports = function(grunt) {
     },
     buster: {
       test: {
-        config: './test/buster.js'
+        config: 'test/buster.js'
       }
     },
     clean: {
-      build: ['src/**/*.js']
+      build: ['src/**/*.js', 'test/**/*-test.js']
     },
     coffee: {
       compile: {
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
           bare: true
         },
         files: {
-          'lib/**/*.js': ['src/**/*.coffee']
+          'lib/*.js': ['src/*.coffee']
         }
       }
     },
