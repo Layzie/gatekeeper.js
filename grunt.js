@@ -20,7 +20,7 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      src: ['src/*.js']
+      build: ['src/**/*.js']
     },
     coffee: {
       compile: {
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: '<config:lint.files>',
+      files: ['grunt.js', 'src/**/*.coffee', 'test/**/*-test.coffee'],
       tasks:['buster', 'coffee', 'clean']
     },
     jshint: {
