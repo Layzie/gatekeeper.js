@@ -1,5 +1,9 @@
 {
-  "author": "Layzie",
+  "author": {
+    "name": "HIRAKI Satoru",
+    "email": "saruko313@gmail.com",
+    "url": "http://layzie.hatenablog.com/"
+  },
   "name": "gatekeeper",
   "description": "The JavaScript library for event delagation in mobile browser.",
   "version" : "0.0.1",
