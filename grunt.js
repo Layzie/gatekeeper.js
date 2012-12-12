@@ -16,11 +16,11 @@ module.exports = function(grunt) {
     },
     buster: {
       test: {
-        config: './test/buster.js'
+        config: 'test/buster.js'
       }
     },
     clean: {
-      src: ['./src/*.js']
+      build: ['src/**/*.js', 'test/**/*-test.js']
     },
     coffee: {
       compile: {
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
           bare: true
         },
         files: {
-          './lib/*.js': ['./src/*.coffee']
+          'lib/*.js': ['src/*.coffee']
         }
       }
     },
@@ -45,8 +45,8 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: '<config:lint.files>',
-      tasks:['buster', 'coffee', 'clean']
+      files: ['grunt.js', 'src/**/*.coffee', 'test/**/*-test.coffee'],
+      tasks:['buster', 'coffee', 'clean', 'lint']
     },
     jshint: {
       options: {
@@ -64,7 +64,8 @@ module.exports = function(grunt) {
       },
       globals: {
         browser: true,
-        devel: true
+        devel: true,
+        Gk: true
       }
     },
     uglify: {}

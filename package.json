@@ -1,7 +1,7 @@
 {
   "author": "Layzie",
   "name": "gatekeeper",
-  "description": "The JavaScript library for event delagation for mobile browser.",
+  "description": "The JavaScript library for event delagation in mobile browser.",
   "version" : "0.0.1",
   "scripts": {
     "test": "node_modules/.bin/buster-test"
