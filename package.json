@@ -7,7 +7,6 @@
     "test": "node_modules/.bin/buster-test"
   },
   "dependencies": {
-    "buster": "~0.6.3"
   },
   "devDependencies": {
     "coffee-script": "~1.4.0",
