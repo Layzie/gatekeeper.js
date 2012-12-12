@@ -12,7 +12,7 @@ module.exports = function(grunt) {
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
     },
     lint: {
-      files: ['grunt.js', 'src/**/*.coffee']
+      files: ['grunt.js', 'lib/**/*.js']
     },
     buster: {
       test: {
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
     },
     watch: {
       files: ['grunt.js', 'src/**/*.coffee', 'test/**/*-test.coffee'],
-      tasks:['buster', 'coffee', 'clean']
+      tasks:['buster', 'coffee', 'clean', 'lint']
     },
     jshint: {
       options: {
@@ -64,7 +64,8 @@ module.exports = function(grunt) {
       },
       globals: {
         browser: true,
-        devel: true
+        devel: true,
+        Gk: true
       }
     },
     uglify: {}
