@@ -1,4 +1,4 @@
-/*! gatekeeper.js - v0.0.1 - 2012-12-12
+/*! gatekeeper.js - v0.0.1 - 2012-12-13
 * Copyright (c) 2012 HIRAKI Satoru; Licensed MIT */
 
 var __hasProp = {}.hasOwnProperty;
@@ -157,15 +157,15 @@ var __hasProp = {}.hasOwnProperty;
       if (!(this instanceof Gk)) {
         for (key in _gk_instances) {
           value = _gk_instances[key];
-          if (_gk_instances[key].ele === ele) {
-            return _gk_instances[key];
+          if (value.element === ele) {
+            return value;
           }
         }
         _id++;
         _gk_instances[_id] = new Gk(ele, _id);
         return _gk_instances[_id];
       }
-      this.ele = ele;
+      this.element = ele;
       this.id = _id;
     }
 
@@ -177,18 +177,14 @@ var __hasProp = {}.hasOwnProperty;
       return _bind.call(this, evt, selector, cb, true);
     };
 
-    Gk.prototype.matchesSelector = function() {};
-
-    Gk.prototype.cancel = _cancel;
-
-    Gk.prototype.addEvent = _addEvent;
-
-    Gk.prototype.matchesEvent = function() {
-      return true;
-    };
-
     return Gk;
 
   })();
+  Gk.matchesSelector = function() {};
+  Gk.cancel = _cancel;
+  Gk.addEvent = _addEvent;
+  Gk.matchesEvent = function() {
+    return true;
+  };
   return window.Gk = Gk;
 })(window);

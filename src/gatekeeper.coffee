@@ -111,24 +111,25 @@
     constructor: (ele, id) ->
       unless @ instanceof Gk
         for key, value of _gk_instances
-          if _gk_instances[key].ele is ele
-            return _gk_instances[key]
+          if value.element is ele
+            return value
 
         _id++
         _gk_instances[_id] = new Gk ele, _id
 
         return _gk_instances[_id]
 
-      @ele= ele
+      @element= ele
       @id = _id
     on: (evt, selector, cb) ->
       _bind.call @, evt, selector, cb
     off: (evt, selector, cb) ->
       _bind.call @, evt, selector, cb, true
-    matchesSelector: ->
-    cancel: _cancel
-    addEvent: _addEvent
-    matchesEvent: -> return true
+
+  Gk.matchesSelector = ->
+  Gk.cancel = _cancel
+  Gk.addEvent = _addEvent
+  Gk.matchesEvent = -> return true
 
   window.Gk = Gk
 )(window)
