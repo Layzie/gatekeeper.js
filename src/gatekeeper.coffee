@@ -86,7 +86,7 @@
       if matches[i]
         j = 0
         while j < matches[i].length
-          if matches[i][j].call matches[i].match, e is false
+          if matches[i][j].call(matches[i].match, e) is false
             Gk.cancel e
             return
 
@@ -143,7 +143,7 @@
   Gk.matchesSelector = ->
   Gk.cancel = _cancel
   Gk.addEvent = _addEvent
-  Gk.matchesEvent = -> true
+  Gk.matchesEvent = -> return true
 
   window.Gk = Gk
 )()

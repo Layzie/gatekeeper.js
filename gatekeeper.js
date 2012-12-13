@@ -111,7 +111,7 @@
       if (matches[i]) {
         j = 0;
         while (j < matches[i].length) {
-          if (matches[i][j].call(matches[i].match, e === false)) {
+          if (matches[i][j].call(matches[i].match, e) === false) {
             Gk.cancel(e);
             return;
           }
