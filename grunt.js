@@ -20,7 +20,7 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      build: ['src/**/*.js', 'test/**/*-test.js']
+      build: ['src/*.js', 'test/*-test.js']
     },
     coffee: {
       compile: {
