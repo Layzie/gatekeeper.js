@@ -1,4 +1,4 @@
-((window) ->
+(->
   _matcher = undefined
   _level = 0
   _id = 0
@@ -16,22 +16,22 @@
   _getMatcher = (el) ->
     return _matcher if _matcher
 
-    _matcher ?= el.matches
-    _matcher ?= el.webkitMatchesSelector
+    _matcher = el.matches  if el.matches
+    _matcher = el.webkitMatchesSelector  if el.webkitMatchesSelector
 
     _matcher = Gk.matchesSelector unless _matcher
 
     _matcher
 
   _matchesSelector = (el, selector, bound_el) ->
-    return bound_el if selector is 'root'
+    return bound_el if selector is '_root'
 
     return if el is bound_el
 
     return el if _getMatcher(el).call el, selector
 
     if el.parentNode
-      _level--
+      _level++
       _matchesSelector el.parentNode, selector, bound_el
 
   _addHandler = (gk, evt, selector, cb) ->
@@ -47,53 +47,67 @@
       return
 
     unless cb
-      _handlers[gk.id][evt][selector] = null
+      delete _handlers[gk.id][evt][selector]
       return
 
-    for val, i in _handlers[gk.id][evt][selector]
+    i = 0
+
+    while i < _handlers[gk.id][evt][selector].length
       if _handlers[gk.id][evt][selector][i] is cb
         _handlers[gk.id][evt][selector].pop i, 1
         break
+      i++
 
   _handleEvent = (id, e, type) ->
     return unless _handlers[id][type]
 
     target = e.target
+    selector = undefined
+    match = undefined
     matches = {}
+    i = 0
+    j = 0
 
     _level = 0
 
-    for own selector, value of _handlers[id][type]
-      match = _matchesSelector target, selector, _gk_instances[id].element
+    for selector of _handlers[id][type]
+      if _handlers[id][type].hasOwnProperty(selector)
+        match = _matchesSelector target, selector, _gk_instances[id].element
 
-      if match and Gk.matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
-        _level++
-        _handlers[id][type][selector].match = match
-        matches[_level] = _handlers[id][type][selector]
+        if match and Gk.matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
+          _level++
+          _handlers[id][type][selector].match = match
+          matches[_level] = _handlers[id][type][selector]
 
-    e.stopPropagation = ->
-      e.cancelBubble = true
+    e.stopPropagation = -> e.cancelBubble = true
 
-    for i in _level
+    i = 0
+    while i <= _level
       if matches[i]
-        for j in matches[i]
+        j = 0
+        while j < matches[i].length
           if matches[i][j].call matches[i].match, e is false
             Gk.cancel e
             return
 
           return if e.cancelBubble
+          j++
+      i++
 
   _bind = (evt, selector, cb, remove) ->
     evt = [evt] unless evt instanceof Array
 
-    if not cb and typeof selector is 'function'
+    if not cb and typeof (selector) is 'function'
       cb = selector
       selector = '_root'
 
     id = @id
     global_cb = (e) -> _handleEvent id, e, global_cb.original
 
-    for i in evt
+    i = undefined
+    i = 0
+
+    while i < evt.length
       global_cb.original = evt[i]
 
       if not _handlers[@id] or not _handlers[@id][evt[i]]
@@ -104,32 +118,32 @@
         continue
 
       _addHandler @, evt[i], selector, cb
+      i++
+    @
 
-    return @
+  Gk = (el, id) ->
+    unless @ instanceof Gk
+      for key of _gk_instances
+        return _gk_instances[key] if _gk_instances[key].element is el
 
-  class Gk
-    constructor: (ele, id) ->
-      unless @ instanceof Gk
-        for key, value of _gk_instances
-          if value.element is ele
-            return value
+      _id++
+      _gk_instances[_id] = new Gk el, _id
 
-        _id++
-        _gk_instances[_id] = new Gk ele, _id
+      return _gk_instances[_id]
 
-        return _gk_instances[_id]
+    @element= el
+    @id = _id
 
-      @element= ele
-      @id = _id
-    on: (evt, selector, cb) ->
-      _bind.call @, evt, selector, cb
-    off: (evt, selector, cb) ->
-      _bind.call @, evt, selector, cb, true
+  Gk::on = (evt, selector, cb) ->
+    _bind.call @, evt, selector, cb
+
+  Gk::off = (evt, selector, cb) ->
+    _bind.call @, evt, selector, cb, true
 
   Gk.matchesSelector = ->
   Gk.cancel = _cancel
   Gk.addEvent = _addEvent
-  Gk.matchesEvent = -> return true
+  Gk.matchesEvent = -> true
 
   window.Gk = Gk
-)(window)
+)()

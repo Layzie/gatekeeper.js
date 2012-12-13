@@ -1,9 +1,8 @@
 /*! gatekeeper.js - v0.0.1 - 2012-12-13
 * Copyright (c) 2012 HIRAKI Satoru; Licensed MIT */
 
-var __hasProp = {}.hasOwnProperty;
 
-(function(window) {
+(function() {
   var Gk, _addEvent, _addHandler, _bind, _cancel, _getMatcher, _gk_instances, _handleEvent, _handlers, _id, _level, _matcher, _matchesSelector, _removeHandler;
   _matcher = void 0;
   _level = 0;
@@ -23,10 +22,10 @@ var __hasProp = {}.hasOwnProperty;
     if (_matcher) {
       return _matcher;
     }
-    if (_matcher == null) {
+    if (el.matches) {
       _matcher = el.matches;
     }
-    if (_matcher == null) {
+    if (el.webkitMatchesSelector) {
       _matcher = el.webkitMatchesSelector;
     }
     if (!_matcher) {
@@ -35,7 +34,7 @@ var __hasProp = {}.hasOwnProperty;
     return _matcher;
   };
   _matchesSelector = function(el, selector, bound_el) {
-    if (selector === 'root') {
+    if (selector === '_root') {
       return bound_el;
     }
     if (el === bound_el) {
@@ -45,7 +44,7 @@ var __hasProp = {}.hasOwnProperty;
       return el;
     }
     if (el.parentNode) {
-      _level--;
+      _level++;
       return _matchesSelector(el.parentNode, selector, bound_el);
     }
   };
@@ -62,56 +61,56 @@ var __hasProp = {}.hasOwnProperty;
     return _handlers[gk.id][evt][selector].push(cb);
   };
   _removeHandler = function(gk, evt, selector, cb) {
-    var i, val, _i, _len, _ref, _results;
+    var i, _results;
     if (!cb && !selector) {
       _handlers[gk.id][event] = {};
       return;
     }
     if (!cb) {
-      _handlers[gk.id][evt][selector] = null;
+      delete _handlers[gk.id][evt][selector];
       return;
     }
-    _ref = _handlers[gk.id][evt][selector];
+    i = 0;
     _results = [];
-    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-      val = _ref[i];
+    while (i < _handlers[gk.id][evt][selector].length) {
       if (_handlers[gk.id][evt][selector][i] === cb) {
         _handlers[gk.id][evt][selector].pop(i, 1);
         break;
-      } else {
-        _results.push(void 0);
       }
+      _results.push(i++);
     }
     return _results;
   };
   _handleEvent = function(id, e, type) {
-    var i, j, match, matches, selector, target, value, _i, _j, _len, _len1, _ref, _ref1;
+    var i, j, match, matches, selector, target;
     if (!_handlers[id][type]) {
       return;
     }
     target = e.target;
+    selector = void 0;
+    match = void 0;
     matches = {};
+    i = 0;
+    j = 0;
     _level = 0;
-    _ref = _handlers[id][type];
-    for (selector in _ref) {
-      if (!__hasProp.call(_ref, selector)) continue;
-      value = _ref[selector];
-      match = _matchesSelector(target, selector, _gk_instances[id].element);
-      if (match && Gk.matchesEvent(type, _gk_instances[id].element, match, selector === '_root', e)) {
-        _level++;
-        _handlers[id][type][selector].match = match;
-        matches[_level] = _handlers[id][type][selector];
+    for (selector in _handlers[id][type]) {
+      if (_handlers[id][type].hasOwnProperty(selector)) {
+        match = _matchesSelector(target, selector, _gk_instances[id].element);
+        if (match && Gk.matchesEvent(type, _gk_instances[id].element, match, selector === '_root', e)) {
+          _level++;
+          _handlers[id][type][selector].match = match;
+          matches[_level] = _handlers[id][type][selector];
+        }
       }
     }
     e.stopPropagation = function() {
       return e.cancelBubble = true;
     };
-    for (_i = 0, _len = _level.length; _i < _len; _i++) {
-      i = _level[_i];
+    i = 0;
+    while (i <= _level) {
       if (matches[i]) {
-        _ref1 = matches[i];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          j = _ref1[_j];
+        j = 0;
+        while (j < matches[i].length) {
           if (matches[i][j].call(matches[i].match, e === false)) {
             Gk.cancel(e);
             return;
@@ -119,12 +118,14 @@ var __hasProp = {}.hasOwnProperty;
           if (e.cancelBubble) {
             return;
           }
+          j++;
         }
       }
+      i++;
     }
   };
   _bind = function(evt, selector, cb, remove) {
-    var global_cb, i, id, _i, _len;
+    var global_cb, i, id;
     if (!(evt instanceof Array)) {
       evt = [evt];
     }
@@ -136,8 +137,9 @@ var __hasProp = {}.hasOwnProperty;
     global_cb = function(e) {
       return _handleEvent(id, e, global_cb.original);
     };
-    for (_i = 0, _len = evt.length; _i < _len; _i++) {
-      i = evt[_i];
+    i = void 0;
+    i = 0;
+    while (i < evt.length) {
       global_cb.original = evt[i];
       if (!_handlers[this.id] || !_handlers[this.id][evt[i]]) {
         Gk.addEvent(this, evt[i], global_cb);
@@ -147,39 +149,31 @@ var __hasProp = {}.hasOwnProperty;
         continue;
       }
       _addHandler(this, evt[i], selector, cb);
+      i++;
     }
     return this;
   };
-  Gk = (function() {
-
-    function Gk(ele, id) {
-      var key, value;
-      if (!(this instanceof Gk)) {
-        for (key in _gk_instances) {
-          value = _gk_instances[key];
-          if (value.element === ele) {
-            return value;
-          }
+  Gk = function(el, id) {
+    var key;
+    if (!(this instanceof Gk)) {
+      for (key in _gk_instances) {
+        if (_gk_instances[key].element === el) {
+          return _gk_instances[key];
         }
-        _id++;
-        _gk_instances[_id] = new Gk(ele, _id);
-        return _gk_instances[_id];
       }
-      this.element = ele;
-      this.id = _id;
+      _id++;
+      _gk_instances[_id] = new Gk(el, _id);
+      return _gk_instances[_id];
     }
-
-    Gk.prototype.on = function(evt, selector, cb) {
-      return _bind.call(this, evt, selector, cb);
-    };
-
-    Gk.prototype.off = function(evt, selector, cb) {
-      return _bind.call(this, evt, selector, cb, true);
-    };
-
-    return Gk;
-
-  })();
+    this.element = el;
+    return this.id = _id;
+  };
+  Gk.prototype.on = function(evt, selector, cb) {
+    return _bind.call(this, evt, selector, cb);
+  };
+  Gk.prototype.off = function(evt, selector, cb) {
+    return _bind.call(this, evt, selector, cb, true);
+  };
   Gk.matchesSelector = function() {};
   Gk.cancel = _cancel;
   Gk.addEvent = _addEvent;
@@ -187,4 +181,4 @@ var __hasProp = {}.hasOwnProperty;
     return true;
   };
   return window.Gk = Gk;
-})(window);
+})();
