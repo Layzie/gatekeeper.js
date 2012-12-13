@@ -121,24 +121,23 @@
       i++
     @
 
-  Gk = (el, id) ->
-    unless @ instanceof Gk
-      for key of _gk_instances
-        return _gk_instances[key] if _gk_instances[key].element is el
+  class Gk
+    constructor: (el, id) ->
+      unless @ instanceof Gk
+        for key of _gk_instances
+          return _gk_instances[key] if _gk_instances[key].element is el
 
-      _id++
-      _gk_instances[_id] = new Gk el, _id
+        _id++
+        _gk_instances[_id] = new Gk el, _id
 
-      return _gk_instances[_id]
+        return _gk_instances[_id]
 
-    @element= el
-    @id = _id
-
-  Gk::on = (evt, selector, cb) ->
-    _bind.call @, evt, selector, cb
-
-  Gk::off = (evt, selector, cb) ->
-    _bind.call @, evt, selector, cb, true
+      @element= el
+      @id = _id
+    on: (evt, selector, cb) ->
+      _bind.call @, evt, selector, cb
+    off: (evt, selector, cb) ->
+      _bind.call @, evt, selector, cb, true
 
   Gk.matchesSelector = ->
   Gk.cancel = _cancel
