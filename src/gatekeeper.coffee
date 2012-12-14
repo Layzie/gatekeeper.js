@@ -5,6 +5,11 @@
   _handlers = {}
   _gk_instances = {}
 
+  _checkType = (type, arg) ->
+    object = Object::toString.call(arg).slice 8, -1
+
+    if arg? and object is type then true else false
+
   _addEvent = (gk, type, cb) ->
     use_capture = type is 'blur' or type is 'focus'
     gk.element.addEventListener type, cb, use_capture
@@ -95,9 +100,9 @@
       i++
 
   _bind = (evt, selector, cb, remove) ->
-    evt = [evt] unless evt instanceof Array
+    evt = [evt] unless _checkType 'Array', evt
 
-    if not cb and typeof (selector) is 'function'
+    if not cb and _checkType 'Function', selector
       cb = selector
       selector = '_root'
 
