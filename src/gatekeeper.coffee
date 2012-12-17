@@ -10,14 +10,6 @@
 
     if arg? and object is type then true else false
 
-  _addEvent = (gk, type, cb) ->
-    use_capture = type is 'blur' or type is 'focus'
-    gk.element.addEventListener type, cb, use_capture
-
-  _cancel = (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-
   _getMatcher = (el) ->
     return _matcher if _matcher
 
@@ -144,9 +136,13 @@
     off: (evt, selector, cb) ->
       _bind.call @, evt, selector, cb, true
 
+  Gk.cancel = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+  Gk.addEvent = (gk, type, cb) ->
+    use_capture = type is 'blur' or type is 'focus'
+    gk.element.addEventListener type, cb, use_capture
   Gk.matchesSelector = ->
-  Gk.cancel = _cancel
-  Gk.addEvent = _addEvent
   Gk.matchesEvent = -> return true
 
   window.Gk = Gk
