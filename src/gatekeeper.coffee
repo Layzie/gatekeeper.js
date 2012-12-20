@@ -40,7 +40,7 @@
 
   _removeHandler = (gk, evt, selector, cb) ->
     if not cb and not selector
-      _handlers[gk.id][event] = {}
+      _handlers[gk.id][evt] = {}
       return
 
     unless cb
@@ -112,7 +112,6 @@
 
       if remove
         _removeHandler @, evt[i], selector, cb
-        continue
 
       _addHandler @, evt[i], selector, cb
       i++
