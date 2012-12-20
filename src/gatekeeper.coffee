@@ -84,10 +84,9 @@
       if matches[i]
         j = 0
         while j < matches[i].length
-          if matches[i][j]?
-            if matches[i][j].call(matches[i].match, e) is false
-              Gk.cancel e
-              return
+          if matches[i][j]? and matches[i][j].call(matches[i].match, e) is false
+            Gk.cancel e
+            return
 
           return if e.cancelBubble
           j++
