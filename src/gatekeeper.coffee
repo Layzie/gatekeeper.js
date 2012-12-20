@@ -5,19 +5,16 @@
   _handlers = {}
   _gk_instances = {}
 
-  _addEvent = (gk, type, cb) ->
-    use_capture = type is 'blur' or type is 'focus'
-    gk.element.addEventListener type, cb, use_capture
+  _checkType = (type, arg) ->
+    object = Object::toString.call(arg).slice 8, -1
 
-  _cancel = (e) ->
-    e.preventDefault()
-    e.stopPropagation()
+    if arg? and object is type then true else false
 
   _getMatcher = (el) ->
     return _matcher if _matcher
 
-    _matcher = el.matches  if el.matches
-    _matcher = el.webkitMatchesSelector  if el.webkitMatchesSelector
+    _matcher = el.matches if el.matches
+    _matcher = el.webkitMatchesSelector if el.webkitMatchesSelector
 
     _matcher = Gk.matchesSelector unless _matcher
 
@@ -43,7 +40,7 @@
 
   _removeHandler = (gk, evt, selector, cb) ->
     if not cb and not selector
-      _handlers[gk.id][event] = {}
+      _handlers[gk.id][evt] = {}
       return
 
     unless cb
@@ -73,8 +70,9 @@
     for selector of _handlers[id][type]
       if _handlers[id][type].hasOwnProperty(selector)
         match = _matchesSelector target, selector, _gk_instances[id].element
+        matchesEvent = -> return true
 
-        if match and Gk.matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
+        if match and matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
           _level++
           _handlers[id][type][selector].match = match
           matches[_level] = _handlers[id][type][selector]
@@ -86,18 +84,19 @@
       if matches[i]
         j = 0
         while j < matches[i].length
-          if matches[i][j].call(matches[i].match, e) is false
-            Gk.cancel e
-            return
+          if matches[i][j]?
+            if matches[i][j].call(matches[i].match, e) is false
+              Gk.cancel e
+              return
 
           return if e.cancelBubble
           j++
       i++
 
   _bind = (evt, selector, cb, remove) ->
-    evt = [evt] unless evt instanceof Array
+    evt = [evt] unless _checkType 'Array', evt
 
-    if not cb and typeof (selector) is 'function'
+    if not cb and _checkType 'Function', selector
       cb = selector
       selector = '_root'
 
@@ -115,35 +114,36 @@
 
       if remove
         _removeHandler @, evt[i], selector, cb
-        continue
 
       _addHandler @, evt[i], selector, cb
       i++
     @
 
-  Gk = (el, id) ->
-    unless @ instanceof Gk
-      for key of _gk_instances
-        return _gk_instances[key] if _gk_instances[key].element is el
+  class Gk
+    constructor: (el, id) ->
+      unless @ instanceof Gk
+        for key of _gk_instances
+          return _gk_instances[key] if _gk_instances[key].element is el
 
-      _id++
-      _gk_instances[_id] = new Gk el, _id
+        _id++
+        _gk_instances[_id] = new Gk el, _id
 
-      return _gk_instances[_id]
+        return _gk_instances[_id]
 
-    @element= el
-    @id = _id
+      @element= el
+      @id = _id
+    on: (evt, selector, cb) ->
+      _bind.call @, evt, selector, cb
+    off: (evt, selector, cb) ->
+      _bind.call @, evt, selector, cb, true
 
-  Gk::on = (evt, selector, cb) ->
-    _bind.call @, evt, selector, cb
-
-  Gk::off = (evt, selector, cb) ->
-    _bind.call @, evt, selector, cb, true
-
+  Gk.cancel = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+  Gk.addEvent = (gk, type, cb) ->
+    use_capture = type is 'blur' or type is 'focus'
+    gk.element.addEventListener type, cb, use_capture
   Gk.matchesSelector = ->
-  Gk.cancel = _cancel
-  Gk.addEvent = _addEvent
-  Gk.matchesEvent = -> return true
 
   window.Gk = Gk
 )()
