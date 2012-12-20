@@ -13,8 +13,8 @@
   _getMatcher = (el) ->
     return _matcher if _matcher
 
-    _matcher = el.matches  if el.matches
-    _matcher = el.webkitMatchesSelector  if el.webkitMatchesSelector
+    _matcher = el.matches if el.matches
+    _matcher = el.webkitMatchesSelector if el.webkitMatchesSelector
 
     _matcher = Gk.matchesSelector unless _matcher
 
@@ -70,8 +70,9 @@
     for selector of _handlers[id][type]
       if _handlers[id][type].hasOwnProperty(selector)
         match = _matchesSelector target, selector, _gk_instances[id].element
+        matchesEvent = -> return true
 
-        if match and Gk.matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
+        if match and matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
           _level++
           _handlers[id][type][selector].match = match
           matches[_level] = _handlers[id][type][selector]
@@ -83,9 +84,10 @@
       if matches[i]
         j = 0
         while j < matches[i].length
-          if matches[i][j].call(matches[i].match, e) is false
-            Gk.cancel e
-            return
+          if matches[i][j]?
+            if matches[i][j].call(matches[i].match, e) is false
+              Gk.cancel e
+              return
 
           return if e.cancelBubble
           j++
@@ -142,7 +144,6 @@
     use_capture = type is 'blur' or type is 'focus'
     gk.element.addEventListener type, cb, use_capture
   Gk.matchesSelector = ->
-  Gk.matchesEvent = -> return true
 
   window.Gk = Gk
 )()
