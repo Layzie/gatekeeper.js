@@ -67,15 +67,16 @@
 
     _level = 0
 
-    for selector of _handlers[id][type]
-      if _handlers[id][type].hasOwnProperty(selector)
-        match = _matchesSelector target, selector, _gk_instances[id].element
-        matchesEvent = -> return true
+    selector = Object.keys _handlers[id][type]
 
-        if match and matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
-          _level++
-          _handlers[id][type][selector].match = match
-          matches[_level] = _handlers[id][type][selector]
+    selector.forEach ->
+      match = _matchesSelector target, @, _gk_instances[id].element
+      matchesEvent = -> return true
+
+      if match and matchesEvent type, _gk_instances[id].element, match, @ is '_root', e
+        _level++
+        _handlers[id][type][selector].match = match
+        matches[_level] = _handlers[id][type][@]
 
     e.stopPropagation = -> e.cancelBubble = true
 
