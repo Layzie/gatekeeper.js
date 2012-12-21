@@ -1,5 +1,4 @@
 (->
-  _matcher = undefined
   _level = 0
   _id = 0
   _handlers = {}
@@ -10,22 +9,24 @@
 
     if arg? and object is type then true else false
 
-  _getMatcher = (el) ->
-    return _matcher if _matcher
-
-    _matcher = el.matches if el.matches
-    _matcher = el.webkitMatchesSelector if el.webkitMatchesSelector
-
-    _matcher = Gk.matchesSelector unless _matcher
-
-    _matcher
-
   _matchesSelector = (el, selector, bound_el) ->
+    getMatcher = (el) ->
+      matcher = undefined
+
+      return matcher if matcher
+
+      matcher = el.matches if el.matches
+      matcher = el.webkitMatchesSelector if el.webkitMatchesSelector
+
+      matcher = Gk.matchesSelector unless matcher
+
+      matcher
+
     return bound_el if selector is '_root'
 
     return if el is bound_el
 
-    return el if _getMatcher(el).call el, selector
+    return el if getMatcher(el).call el, selector
 
     if el.parentNode
       _level++
