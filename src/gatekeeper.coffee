@@ -67,16 +67,16 @@
 
     _level = 0
 
-    selector = Object.keys _handlers[id][type]
+    selectors = Object.keys _handlers[id][type]
 
-    selector.forEach ->
-      match = _matchesSelector target, @, _gk_instances[id].element
+    selectors.forEach (selector) ->
+      match = _matchesSelector target, selector, _gk_instances[id].element
       matchesEvent = -> return true
 
-      if match and matchesEvent type, _gk_instances[id].element, match, @ is '_root', e
+      if match and matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
         _level++
         _handlers[id][type][selector].match = match
-        matches[_level] = _handlers[id][type][@]
+        matches[_level] = _handlers[id][type][selector]
 
     e.stopPropagation = -> e.cancelBubble = true
 
