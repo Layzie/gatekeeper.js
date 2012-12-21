@@ -10,8 +10,8 @@
 
       return matcher if matcher
 
-      matcher = el.matches if el.matches
-      matcher = el.webkitMatchesSelector if el.webkitMatchesSelector
+      matcher ?= el.matches
+      matcher ?= el.webkitMatchesSelector
 
       matcher = Gk.matchesSelector unless matcher
 
@@ -28,9 +28,9 @@
       _matchesSelector el.parentNode, selector, bound_el
 
   _addHandler = (gk, evt, selector, cb) ->
-    _handlers[gk.id] = {} unless _handlers[gk.id]
-    _handlers[gk.id][evt] = {} unless _handlers[gk.id][evt]
-    _handlers[gk.id][evt][selector] = [] unless _handlers[gk.id][evt][selector]
+    _handlers[gk.id] ?= {}
+    _handlers[gk.id][evt] ?= {}
+    _handlers[gk.id][evt][selector] ?= []
 
     _handlers[gk.id][evt][selector].push cb
 
