@@ -4,11 +4,6 @@
   _handlers = {}
   _gk_instances = {}
 
-  _checkType = (type, arg) ->
-    object = Object::toString.call(arg).slice 8, -1
-
-    if arg? and object is type then true else false
-
   _matchesSelector = (el, selector, bound_el) ->
     getMatcher = (el) ->
       matcher = undefined
@@ -95,9 +90,14 @@
       i++
 
   _bind = (evt, selector, cb, remove) ->
-    evt = [evt] unless _checkType 'Array', evt
+    checkType = (type, arg) ->
+      object = Object::toString.call(arg).slice 8, -1
 
-    if not cb and _checkType 'Function', selector
+      if arg? and object is type then true else false
+
+    evt = [evt] unless checkType 'Array', evt
+
+    if not cb and checkType 'Function', selector
       cb = selector
       selector = '_root'
 
