@@ -1,46 +1,39 @@
-/*! gatekeeper.js - v0.0.1 - 2012-12-20
-* Copyright (c) 2012 HIRAKI Satoru; Licensed MIT */
+/*! gatekeeper.js - v0.0.1 - 2012-12-25
+* Copyright (c) 2012 HIRAKI Satoru; Licensed Apache License, Version 2.0 */
 
 
 (function() {
-  var Gk, _addHandler, _bind, _checkType, _getMatcher, _gk_instances, _handleEvent, _handlers, _id, _level, _matcher, _matchesSelector, _removeHandler;
-  _matcher = void 0;
+  var Gk, _addHandler, _bind, _gk_instances, _handleEvent, _handlers, _id, _level, _matchesSelector, _removeHandler;
   _level = 0;
   _id = 0;
   _handlers = {};
   _gk_instances = {};
-  _checkType = function(type, arg) {
-    var object;
-    object = Object.prototype.toString.call(arg).slice(8, -1);
-    if ((arg != null) && object === type) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-  _getMatcher = function(el) {
-    if (_matcher) {
-      return _matcher;
-    }
-    if (el.matches) {
-      _matcher = el.matches;
-    }
-    if (el.webkitMatchesSelector) {
-      _matcher = el.webkitMatchesSelector;
-    }
-    if (!_matcher) {
-      _matcher = Gk.matchesSelector;
-    }
-    return _matcher;
-  };
   _matchesSelector = function(el, selector, bound_el) {
+    var getMatcher;
+    getMatcher = function(el) {
+      var matcher;
+      matcher = void 0;
+      if (matcher) {
+        return matcher;
+      }
+      if (matcher == null) {
+        matcher = el.matches;
+      }
+      if (matcher == null) {
+        matcher = el.webkitMatchesSelector;
+      }
+      if (!matcher) {
+        matcher = Gk.matchesSelector;
+      }
+      return matcher;
+    };
     if (selector === '_root') {
       return bound_el;
     }
     if (el === bound_el) {
       return;
     }
-    if (_getMatcher(el).call(el, selector)) {
+    if (getMatcher(el).call(el, selector)) {
       return el;
     }
     if (el.parentNode) {
@@ -49,14 +42,15 @@
     }
   };
   _addHandler = function(gk, evt, selector, cb) {
-    if (!_handlers[gk.id]) {
-      _handlers[gk.id] = {};
+    var _base, _base1, _name, _ref, _ref1, _ref2;
+    if ((_ref = _handlers[_name = gk.id]) == null) {
+      _handlers[_name] = {};
     }
-    if (!_handlers[gk.id][evt]) {
-      _handlers[gk.id][evt] = {};
+    if ((_ref1 = (_base = _handlers[gk.id])[evt]) == null) {
+      _base[evt] = {};
     }
-    if (!_handlers[gk.id][evt][selector]) {
-      _handlers[gk.id][evt][selector] = [];
+    if ((_ref2 = (_base1 = _handlers[gk.id][evt])[selector]) == null) {
+      _base1[selector] = [];
     }
     return _handlers[gk.id][evt][selector].push(cb);
   };
@@ -82,7 +76,7 @@
     return _results;
   };
   _handleEvent = function(id, e, type) {
-    var i, j, match, matches, matchesEvent, selector, target;
+    var i, j, match, matches, selector, selectors, target;
     if (!_handlers[id][type]) {
       return;
     }
@@ -93,19 +87,19 @@
     i = 0;
     j = 0;
     _level = 0;
-    for (selector in _handlers[id][type]) {
-      if (_handlers[id][type].hasOwnProperty(selector)) {
-        match = _matchesSelector(target, selector, _gk_instances[id].element);
-        matchesEvent = function() {
-          return true;
-        };
-        if (match && matchesEvent(type, _gk_instances[id].element, match, selector === '_root', e)) {
-          _level++;
-          _handlers[id][type][selector].match = match;
-          matches[_level] = _handlers[id][type][selector];
-        }
+    selectors = Object.keys(_handlers[id][type]);
+    selectors.forEach(function(selector) {
+      var matchesEvent;
+      match = _matchesSelector(target, selector, _gk_instances[id].element);
+      matchesEvent = function() {
+        return true;
+      };
+      if (match && matchesEvent(type, _gk_instances[id].element, match, selector === '_root', e)) {
+        _level++;
+        _handlers[id][type][selector].match = match;
+        return matches[_level] = _handlers[id][type][selector];
       }
-    }
+    });
     e.stopPropagation = function() {
       return e.cancelBubble = true;
     };
@@ -128,11 +122,20 @@
     }
   };
   _bind = function(evt, selector, cb, remove) {
-    var global_cb, i, id;
-    if (!_checkType('Array', evt)) {
+    var checkType, global_cb, i, id;
+    checkType = function(type, arg) {
+      var object;
+      object = Object.prototype.toString.call(arg).slice(8, -1);
+      if ((arg != null) && object === type) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+    if (!checkType('Array', evt)) {
       evt = [evt];
     }
-    if (!cb && _checkType('Function', selector)) {
+    if (!cb && checkType('Function', selector)) {
       cb = selector;
       selector = '_root';
     }
