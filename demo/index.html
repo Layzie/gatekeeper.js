@@ -29,20 +29,20 @@
           hogeBtn = document.getElementById('hogeButton'),
           fugaBtn = document.getElementById('fugaButton');
 
-      Gk(hoge).on('click', 'li a', function (e) {
-        console.log(e.target.innerHTML);
+      Gk(hoge).on('touchstart', 'li a', function (e) {
+        alert(e.target.innerHTML);
       });
 
-      Gk(fuga).on('click', 'li a', function (e) {
-        console.log(e.target);
+      Gk(fuga).on('touchstart', 'li a', function (e) {
+        alert(e.target.innerHTML);
       });
 
-      hogeBtn.addEventListener('click', function () {
-        Gk(hoge).off('click');
+      hogeBtn.addEventListener('touchstart', function () {
+        Gk(hoge).off('touchstart');
       });
 
-      fugaBtn.addEventListener('click', function () {
-        Gk(fuga).off('click');
+      fugaBtn.addEventListener('touchstart', function () {
+        Gk(fuga).off('touchstart');
       });
     });
   </script>
