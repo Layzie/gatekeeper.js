@@ -49,20 +49,33 @@
     <li><a href="javascript:void(0);">D</a></li>
     <li><a href="javascript:void(0);">E</a></li>
   </ul>
+  <ul id="hogera">
+    <li><a href="javascript:void(0);">α</a></li>
+    <li><a href="javascript:void(0);">β</a></li>
+    <li><a href="javascript:void(0);">γ</a></li>
+    <li><a href="javascript:void(0);">δ</a></li>
+    <li><a href="javascript:void(0);">ε</a></li>
+  </ul>
   <button type="button" id="hogeButton">remove handler for #hoge</button>
   <button type="button" id="fugaButton">remove handler for #fuga</button>
+  <button type="button" id="hogeraButton">remove handler for #hogera</button>
   <script type="text/javascript" charset="utf-8">
     window.addEventListener('load', function () {
       var hoge = document.getElementById('hoge'),
           fuga = document.getElementById('fuga'),
           hogeBtn = document.getElementById('hogeButton'),
-          fugaBtn = document.getElementById('fugaButton');
+          fugaBtn = document.getElementById('fugaButton'),
+          hogeraBtn = document.getElementById('hogeraButton');
 
       Gk(hoge).on('touchstart', 'li a', function (e) {
         alert(e.target.innerHTML);
       });
 
       Gk(fuga).on('touchstart', 'li a', function (e) {
+        alert(e.target.innerHTML);
+      });
+
+      Gk(document).on('touchstart', 'li a', function (e) {
         alert(e.target.innerHTML);
       });
 
@@ -73,6 +86,11 @@
       fugaBtn.addEventListener('touchstart', function () {
         Gk(fuga).off('touchstart');
       });
+
+      hogeraBtn.addEventListener('touchstart', function () {
+        Gk(document).off('touchstart');
+      });
+
     });
   </script>
 </body>
