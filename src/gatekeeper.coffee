@@ -13,7 +13,7 @@
       matcher ?= el.matches
       matcher ?= el.webkitMatchesSelector
 
-      matcher = Gk.matchesSelector unless matcher
+      throw new Error 'There is no mache element' if matcher is undefined
 
       matcher
 
@@ -60,9 +60,10 @@
     matches = {}
     i = 0
     j = 0
-
     _level = 0
-
+    cancel = (e) ->
+      e.preventDefault()
+      e.stopPropagation()
     selectors = Object.keys _handlers[id][type]
 
     selectors.forEach (selector) ->
@@ -82,7 +83,7 @@
         j = 0
         while j < matches[i].length
           if matches[i][j]? and matches[i][j].call(matches[i].match, e) is false
-            Gk.cancel e
+            cancel e
             return
 
           return if e.cancelBubble
@@ -94,6 +95,10 @@
       object = Object::toString.call(arg).slice 8, -1
 
       if arg? and object is type then true else false
+
+    addEvent = (gk, type, cb) ->
+      use_capture = type is 'blur' or type is 'focus'
+      gk.element.addEventListener type, cb, use_capture
 
     evt = [evt] unless checkType 'Array', evt
 
@@ -111,7 +116,7 @@
       global_cb.original = evt[i]
 
       if not _handlers[@id] or not _handlers[@id][evt[i]]
-        Gk.addEvent @, evt[i], global_cb
+        addEvent @, evt[i], global_cb
 
       if remove
         _removeHandler @, evt[i], selector, cb
@@ -137,14 +142,6 @@
       _bind.call @, evt, selector, cb
     off: (evt, selector, cb) ->
       _bind.call @, evt, selector, cb, true
-
-  Gk.cancel = (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-  Gk.addEvent = (gk, type, cb) ->
-    use_capture = type is 'blur' or type is 'focus'
-    gk.element.addEventListener type, cb, use_capture
-  Gk.matchesSelector = ->
 
   window.Gk = Gk
 )()

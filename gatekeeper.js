@@ -1,4 +1,4 @@
-/*! gatekeeper.js - v0.0.1 - 2012-12-25
+/*! gatekeeper.js - v0.0.1 - 2012-12-27
 * Copyright (c) 2012 HIRAKI Satoru; Licensed Apache License, Version 2.0 */
 
 
@@ -22,8 +22,8 @@
       if (matcher == null) {
         matcher = el.webkitMatchesSelector;
       }
-      if (!matcher) {
-        matcher = Gk.matchesSelector;
+      if (matcher === void 0) {
+        throw new Error('There is no mache element');
       }
       return matcher;
     };
@@ -76,7 +76,7 @@
     return _results;
   };
   _handleEvent = function(id, e, type) {
-    var i, j, match, matches, selector, selectors, target;
+    var cancel, i, j, match, matches, selector, selectors, target;
     if (!_handlers[id][type]) {
       return;
     }
@@ -87,6 +87,10 @@
     i = 0;
     j = 0;
     _level = 0;
+    cancel = function(e) {
+      e.preventDefault();
+      return e.stopPropagation();
+    };
     selectors = Object.keys(_handlers[id][type]);
     selectors.forEach(function(selector) {
       var matchesEvent;
@@ -109,7 +113,7 @@
         j = 0;
         while (j < matches[i].length) {
           if ((matches[i][j] != null) && matches[i][j].call(matches[i].match, e) === false) {
-            Gk.cancel(e);
+            cancel(e);
             return;
           }
           if (e.cancelBubble) {
@@ -122,7 +126,7 @@
     }
   };
   _bind = function(evt, selector, cb, remove) {
-    var checkType, global_cb, i, id;
+    var addEvent, checkType, global_cb, i, id;
     checkType = function(type, arg) {
       var object;
       object = Object.prototype.toString.call(arg).slice(8, -1);
@@ -131,6 +135,11 @@
       } else {
         return false;
       }
+    };
+    addEvent = function(gk, type, cb) {
+      var use_capture;
+      use_capture = type === 'blur' || type === 'focus';
+      return gk.element.addEventListener(type, cb, use_capture);
     };
     if (!checkType('Array', evt)) {
       evt = [evt];
@@ -148,7 +157,7 @@
     while (i < evt.length) {
       global_cb.original = evt[i];
       if (!_handlers[this.id] || !_handlers[this.id][evt[i]]) {
-        Gk.addEvent(this, evt[i], global_cb);
+        addEvent(this, evt[i], global_cb);
       }
       if (remove) {
         _removeHandler(this, evt[i], selector, cb);
@@ -187,15 +196,5 @@
     return Gk;
 
   })();
-  Gk.cancel = function(e) {
-    e.preventDefault();
-    return e.stopPropagation();
-  };
-  Gk.addEvent = function(gk, type, cb) {
-    var use_capture;
-    use_capture = type === 'blur' || type === 'focus';
-    return gk.element.addEventListener(type, cb, use_capture);
-  };
-  Gk.matchesSelector = function() {};
   return window.Gk = Gk;
 })();
