@@ -44,8 +44,9 @@
       return
 
     i = 0
+    handlerLen = _handlers[gk.id][evt][selector].length
 
-    while i < _handlers[gk.id][evt][selector].length
+    while i < handlerLen
       if _handlers[gk.id][evt][selector][i] is cb
         _handlers[gk.id][evt][selector].pop i, 1
         break
@@ -81,7 +82,8 @@
     while i <= _level
       if matches[i]
         j = 0
-        while j < matches[i].length
+        matchLen = matches[i].length
+        while j < matchLen
           if matches[i][j]? and matches[i][j].call(matches[i].match, e) is false
             cancel e
             return
@@ -111,8 +113,9 @@
 
     i = undefined
     i = 0
+    evLen = evt.length
 
-    while i < evt.length
+    while i < evLen
       global_cb.original = evt[i]
 
       if not _handlers[@id] or not _handlers[@id][evt[i]]
