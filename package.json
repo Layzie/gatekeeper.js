@@ -1,0 +1,43 @@
+{
+  "author": {
+    "name": "HIRAKI Satoru",
+    "email": "saruko313@gmail.com",
+    "url": "http://layzie.hatenablog.com/"
+  },
+  "name": "gatekeeper",
+  "description": "The JavaScript library for event delagation in mobile browser.",
+  "version" : "0.0.1",
+  "scripts": {
+    "test": "node_modules/.bin/buster-test"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "coffee-script": "~1.4.0",
+    "grunt": "~0.3.17",
+    "grunt-contrib": "~0.3.0"
+  },
+  "engines": {
+    "node": "~0.8"
+  },
+  "main": "./lib/gatekeeper.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Layzie/gatekeeper.js.git"
+  },
+  "keywords": [
+    "event",
+    "html",
+    "javascript"
+  ],
+  "homepage": "",
+  "licenses": [
+    {
+      "type": "Apache License, Version 2.0",
+      "url": "https://github.com/Layzie/gatekeeper.js/blob/master/LICENCE"
+    }
+  ]
+}
