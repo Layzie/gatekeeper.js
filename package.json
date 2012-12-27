@@ -14,8 +14,11 @@
   },
   "devDependencies": {
     "coffee-script": "~1.4.0",
+    "buster": "~0.6.3",
+    "buster-coffee": "",
     "grunt": "~0.3.17",
     "grunt-contrib": "~0.3.0",
+    "grunt-buster": "~0.1.2"
   },
   "engines": {
     "node": "~0.8"
