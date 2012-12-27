@@ -11,7 +11,7 @@ Points of change from [gator](http://craig.is/riding/gators) are mainly below.
 
 ### Warning!!
 
-This product is eary beta.
+This product is early beta.
 
 ## Problem?
 
