@@ -44,16 +44,19 @@
       return
 
     i = 0
-    handlerLen = _handlers[gk.id][evt][selector].length
+    targetSelector = _handlers[gk.id][evt][selector]
+    handlerLen = targetSelector.length
 
     while i < handlerLen
-      if _handlers[gk.id][evt][selector][i] is cb
-        _handlers[gk.id][evt][selector].pop i, 1
+      if targetSelector[i] is cb
+        targetSelector.pop i, 1
         break
       i++
 
   _handleEvent = (id, e, type) ->
-    return unless _handlers[id][type]
+    targetType = _handlers[id][type]
+
+    return unless targetType
 
     target = e.target
     selector = undefined
@@ -65,16 +68,17 @@
     cancel = (e) ->
       e.preventDefault()
       e.stopPropagation()
-    selectors = Object.keys _handlers[id][type]
+    selectors = Object.keys targetType
 
     selectors.forEach (selector) ->
+      targetSelector = _handlers[id][type][selector]
       match = _matchesSelector target, selector, _gk_instances[id].element
       matchesEvent = -> return true
 
       if match and matchesEvent type, _gk_instances[id].element, match, selector is '_root', e
         _level++
-        _handlers[id][type][selector].match = match
-        matches[_level] = _handlers[id][type][selector]
+        targetSelector.match = match
+        matches[_level] = targetSelector
 
     e.stopPropagation = -> e.cancelBubble = true
 
@@ -84,7 +88,8 @@
         j = 0
         matchLen = matches[i].length
         while j < matchLen
-          if matches[i][j]? and matches[i][j].call(matches[i].match, e) is false
+          matched = matches[i][j]
+          if matched? and matched.call(matches[i].match, e) is false
             cancel e
             return
 
