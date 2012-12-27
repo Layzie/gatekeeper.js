@@ -14,11 +14,6 @@ module.exports = function(grunt) {
     lint: {
       files: ['grunt.js', 'lib/**/*.js']
     },
-    buster: {
-      test: {
-        config: 'test/buster.js'
-      }
-    },
     clean: {
       build: ['src/*.js', 'test/*-test.js']
     },
@@ -46,7 +41,7 @@ module.exports = function(grunt) {
     },
     watch: {
       files: ['grunt.js', 'src/**/*.coffee', 'test/**/*-test.coffee'],
-      tasks:['buster', 'coffee', 'clean', 'lint']
+      tasks:['coffee', 'clean', 'lint']
     },
     jshint: {
       options: {
@@ -79,7 +74,4 @@ module.exports = function(grunt) {
 
     // load grunt-contrib
     grunt.loadNpmTasks('grunt-contrib');
-
-    // load grunt-buster
-    grunt.loadNpmTasks('grunt-buster');
 };
