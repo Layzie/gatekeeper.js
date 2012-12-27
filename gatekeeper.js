@@ -55,7 +55,7 @@
     return _handlers[gk.id][evt][selector].push(cb);
   };
   _removeHandler = function(gk, evt, selector, cb) {
-    var i, _results;
+    var handlerLen, i, targetSelector, _results;
     if (!cb && !selector) {
       _handlers[gk.id][evt] = {};
       return;
@@ -65,10 +65,12 @@
       return;
     }
     i = 0;
+    targetSelector = _handlers[gk.id][evt][selector];
+    handlerLen = targetSelector.length;
     _results = [];
-    while (i < _handlers[gk.id][evt][selector].length) {
-      if (_handlers[gk.id][evt][selector][i] === cb) {
-        _handlers[gk.id][evt][selector].pop(i, 1);
+    while (i < handlerLen) {
+      if (targetSelector[i] === cb) {
+        targetSelector.pop(i, 1);
         break;
       }
       _results.push(i++);
@@ -76,8 +78,9 @@
     return _results;
   };
   _handleEvent = function(id, e, type) {
-    var cancel, i, j, match, matches, selector, selectors, target;
-    if (!_handlers[id][type]) {
+    var cancel, i, j, match, matchLen, matched, matches, selector, selectors, target, targetType;
+    targetType = _handlers[id][type];
+    if (!targetType) {
       return;
     }
     target = e.target;
@@ -91,17 +94,18 @@
       e.preventDefault();
       return e.stopPropagation();
     };
-    selectors = Object.keys(_handlers[id][type]);
+    selectors = Object.keys(targetType);
     selectors.forEach(function(selector) {
-      var matchesEvent;
+      var matchesEvent, targetSelector;
+      targetSelector = _handlers[id][type][selector];
       match = _matchesSelector(target, selector, _gk_instances[id].element);
       matchesEvent = function() {
         return true;
       };
       if (match && matchesEvent(type, _gk_instances[id].element, match, selector === '_root', e)) {
         _level++;
-        _handlers[id][type][selector].match = match;
-        return matches[_level] = _handlers[id][type][selector];
+        targetSelector.match = match;
+        return matches[_level] = targetSelector;
       }
     });
     e.stopPropagation = function() {
@@ -111,8 +115,10 @@
     while (i <= _level) {
       if (matches[i]) {
         j = 0;
-        while (j < matches[i].length) {
-          if ((matches[i][j] != null) && matches[i][j].call(matches[i].match, e) === false) {
+        matchLen = matches[i].length;
+        while (j < matchLen) {
+          matched = matches[i][j];
+          if ((matched != null) && matched.call(matches[i].match, e) === false) {
             cancel(e);
             return;
           }
@@ -126,7 +132,7 @@
     }
   };
   _bind = function(evt, selector, cb, remove) {
-    var addEvent, checkType, global_cb, i, id;
+    var addEvent, checkType, evLen, global_cb, i, id;
     checkType = function(type, arg) {
       var object;
       object = Object.prototype.toString.call(arg).slice(8, -1);
@@ -154,7 +160,8 @@
     };
     i = void 0;
     i = 0;
-    while (i < evt.length) {
+    evLen = evt.length;
+    while (i < evLen) {
       global_cb.original = evt[i];
       if (!_handlers[this.id] || !_handlers[this.id][evt[i]]) {
         addEvent(this, evt[i], global_cb);
