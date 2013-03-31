@@ -1,41 +1,46 @@
-### global module:false ### 
+### global module:false ###
 module.exports = (grunt) ->
   # Project configuration.
   grunt.initConfig(
-    pkg: '<json:package.json>'
+    pkg: grunt.file.readJSON 'package.json'
 
-    meta:
-      banner: '/*! <%= pkg.title || pkg.name %>.js - v<%= pkg.version %> - ' +
+    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-      '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
+      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
       '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
+      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n'
 
-    lint:
-      files: ['grunt.js', 'lib/**/*.js']
+    concat:
+      options:
+        banner: '<%= banner %>'
+        stripBanners: true
+      dist:
+        src: ['lib/<%= pkg.name %>.js']
+        dest: '<%= pkg.name %>.js'
+
+    uglify:
+      options:
+        banner: '<%= banner %>'
+      dist:
+        files:
+          '<%= pkg.name %>.min.js': '<%= concat.dist.dest %>'
 
     clean:
-      build: ['src/*.js', 'test/*-test.js']
+      build:
+        src: ['src/*.js', 'test/*-test.js']
 
     coffee:
       compile:
         options:
           bare: true
+          sourceMaps: true
         files:
-          'lib/*.js': ['src/*.coffee']
+          'lib/<%= pkg.name %>.js': 'src/<%= pkg.name %>.coffee'
 
-    concat:
-      dist:
-        src: ['<banner:meta.banner>', '<file_strip_banner:lib/<%= pkg.name %>.js>']
-        dest: '<%= pkg.name %>.js'
-
-    min:
-      dist:
-        src: ['<banner:meta.banner>', '<config:concat.dist.dest>']
-        dest: '<%= pkg.name %>.min.js'
     watch:
-      files: ['grunt.js', 'src/**/*.coffee', 'test/**/*-test.coffee']
-      tasks:['coffee', 'clean', 'lint']
+      lib:
+        files: ['Gruntfile.coffee', 'src/**/*.coffee', 'test/**/*-test.coffee']
+        tasks:['coffee', 'clean']
 
     jshint:
       options:
@@ -50,18 +55,17 @@ module.exports = (grunt) ->
         boss: true
         eqnull: true
         browser: true
-      globals:
-        browser: true,
-        devel: true,
-        Gk: true
-    uglify: {}
+        globals:
+          browser: true,
+          devel: true,
+          Gk: true
   )
 
   # Default task.
-  grunt.registerTask('default', 'concat min')
+  grunt.registerTask 'default', ['concat', 'uglify']
 
   # Develop task.
-  grunt.registerTask('develop', 'buster')
+  grunt.registerTask 'develop', ['buster']
 
   # load grunt-contrib
-  grunt.loadNpmTasks('grunt-contrib')
+  grunt.loadNpmTasks 'grunt-contrib'
