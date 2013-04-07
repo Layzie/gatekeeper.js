@@ -114,17 +114,16 @@
       selector = '_root'
 
     id = @id
-    global_cb = (e) -> _handleEvent id, e, global_cb.original
-
-    i = undefined
     i = 0
     evLen = evt.length
 
-    while i < evLen
-      global_cb.original = evt[i]
+    _getGlobalCb = (type) ->
+      return (e) ->
+        _handleEvent id, e, type
 
-      if not _handlers[@id] or not _handlers[@id][evt[i]]
-        addEvent @, evt[i], global_cb
+    while i < evLen
+      if not _handlers[id] or not _handlers[id][evt[i]]
+        addEvent @, evt[i], _getGlobalCb(evt[i])
 
       if remove
         _removeHandler @, evt[i], selector, cb
@@ -145,7 +144,7 @@
         return _gk_instances[_id]
 
       @element= el
-      @id = _id
+      @id = id
     on: (evt, selector, cb) ->
       _bind.call @, evt, selector, cb
     off: (evt, selector, cb) ->

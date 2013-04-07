@@ -6,16 +6,13 @@
   },
   "name": "gatekeeper",
   "description": "The JavaScript library for event delagation in mobile browser.",
-  "version" : "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "test": "node_modules/.bin/buster-test"
   },
-  "dependencies": {
-  },
   "devDependencies": {
-    "coffee-script": "~1.4.0",
-    "grunt": "~0.3.17",
-    "grunt-contrib": "~0.3.0"
+    "grunt": "~0.4.1",
+    "grunt-contrib": "~0.6.1"
   },
   "engines": {
     "node": "~0.8"
