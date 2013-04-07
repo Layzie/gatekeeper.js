@@ -1,17 +1,18 @@
-/*! gatekeeper.js - v0.0.1 - 2012-12-27
-* Copyright (c) 2012 HIRAKI Satoru; Licensed Apache License, Version 2.0 */
-
-
+/*! gatekeeper - v0.0.2 - 2013-04-08
+* Copyright (c) 2013 HIRAKI Satoru; Licensed Apache License, Version 2.0 */
 (function() {
   var Gk, _addHandler, _bind, _gk_instances, _handleEvent, _handlers, _id, _level, _matchesSelector, _removeHandler;
+
   _level = 0;
   _id = 0;
   _handlers = {};
   _gk_instances = {};
   _matchesSelector = function(el, selector, bound_el) {
     var getMatcher;
+
     getMatcher = function(el) {
       var matcher;
+
       matcher = void 0;
       if (matcher) {
         return matcher;
@@ -43,6 +44,7 @@
   };
   _addHandler = function(gk, evt, selector, cb) {
     var _base, _base1, _name, _ref, _ref1, _ref2;
+
     if ((_ref = _handlers[_name = gk.id]) == null) {
       _handlers[_name] = {};
     }
@@ -56,6 +58,7 @@
   };
   _removeHandler = function(gk, evt, selector, cb) {
     var handlerLen, i, targetSelector, _results;
+
     if (!cb && !selector) {
       _handlers[gk.id][evt] = {};
       return;
@@ -79,6 +82,7 @@
   };
   _handleEvent = function(id, e, type) {
     var cancel, i, j, match, matchLen, matched, matches, selector, selectors, target, targetType;
+
     targetType = _handlers[id][type];
     if (!targetType) {
       return;
@@ -97,6 +101,7 @@
     selectors = Object.keys(targetType);
     selectors.forEach(function(selector) {
       var matchesEvent, targetSelector;
+
       targetSelector = _handlers[id][type][selector];
       match = _matchesSelector(target, selector, _gk_instances[id].element);
       matchesEvent = function() {
@@ -132,9 +137,11 @@
     }
   };
   _bind = function(evt, selector, cb, remove) {
-    var addEvent, checkType, evLen, global_cb, i, id;
+    var addEvent, checkType, evLen, i, id, _getGlobalCb;
+
     checkType = function(type, arg) {
       var object;
+
       object = Object.prototype.toString.call(arg).slice(8, -1);
       if ((arg != null) && object === type) {
         return true;
@@ -144,6 +151,7 @@
     };
     addEvent = function(gk, type, cb) {
       var use_capture;
+
       use_capture = type === 'blur' || type === 'focus';
       return gk.element.addEventListener(type, cb, use_capture);
     };
@@ -155,16 +163,16 @@
       selector = '_root';
     }
     id = this.id;
-    global_cb = function(e) {
-      return _handleEvent(id, e, global_cb.original);
-    };
-    i = void 0;
     i = 0;
     evLen = evt.length;
+    _getGlobalCb = function(type) {
+      return function(e) {
+        return _handleEvent(id, e, type);
+      };
+    };
     while (i < evLen) {
-      global_cb.original = evt[i];
-      if (!_handlers[this.id] || !_handlers[this.id][evt[i]]) {
-        addEvent(this, evt[i], global_cb);
+      if (!_handlers[id] || !_handlers[id][evt[i]]) {
+        addEvent(this, evt[i], _getGlobalCb(evt[i]));
       }
       if (remove) {
         _removeHandler(this, evt[i], selector, cb);
@@ -175,9 +183,9 @@
     return this;
   };
   Gk = (function() {
-
     function Gk(el, id) {
       var key;
+
       if (!(this instanceof Gk)) {
         for (key in _gk_instances) {
           if (_gk_instances[key].element === el) {
@@ -189,7 +197,7 @@
         return _gk_instances[_id];
       }
       this.element = el;
-      this.id = _id;
+      this.id = id;
     }
 
     Gk.prototype.on = function(evt, selector, cb) {
