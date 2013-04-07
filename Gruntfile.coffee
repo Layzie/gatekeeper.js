@@ -64,8 +64,5 @@ module.exports = (grunt) ->
   # Default task.
   grunt.registerTask 'default', ['concat', 'uglify']
 
-  # Develop task.
-  grunt.registerTask 'develop', ['buster']
-
   # load grunt-contrib
   grunt.loadNpmTasks 'grunt-contrib'
