@@ -1,4 +1,4 @@
-(->
+do ->
   _level = 0
   _id = 0
   _handlers = {}
@@ -151,4 +151,3 @@
       _bind.call @, evt, selector, cb, true
 
   window.Gk = Gk
-)()
