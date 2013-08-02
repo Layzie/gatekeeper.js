@@ -6,7 +6,7 @@
   },
   "name": "gatekeeper",
   "description": "The JavaScript library for event delagation in mobile browser.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "scripts": {
     "test": "node_modules/.bin/buster-test"
   },

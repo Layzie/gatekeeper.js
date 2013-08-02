@@ -1,5 +1,7 @@
-/*! gatekeeper - v0.0.2 - 2013-04-08
+/*! gatekeeper - v0.0.3 - 2013-08-02
 * Copyright (c) 2013 HIRAKI Satoru; Licensed Apache License, Version 2.0 */
+var __hasProp = {}.hasOwnProperty;
+
 (function() {
   var Gk, _addHandler, _bind, _gk_instances, _handleEvent, _handlers, _id, _level, _matchesSelector, _removeHandler;
 
@@ -57,8 +59,18 @@
     return _handlers[gk.id][evt][selector].push(cb);
   };
   _removeHandler = function(gk, evt, selector, cb) {
-    var handlerLen, i, targetSelector, _results;
+    var handlerLen, i, targetSelector, type, _ref, _results;
 
+    if (!_handlers[gk.id]) {
+      return;
+    }
+    if (!event) {
+      _ref = _handlers[gk.id];
+      for (type in _ref) {
+        if (!__hasProp.call(_ref, type)) continue;
+        _handlers[gk.id][type] = {};
+      }
+    }
     if (!cb && !selector) {
       _handlers[gk.id][evt] = {};
       return;
@@ -67,13 +79,16 @@
       delete _handlers[gk.id][evt][selector];
       return;
     }
+    if (!_handlers[gk.id][event][selector]) {
+      return;
+    }
     i = 0;
     targetSelector = _handlers[gk.id][evt][selector];
     handlerLen = targetSelector.length;
     _results = [];
     while (i < handlerLen) {
       if (targetSelector[i] === cb) {
-        targetSelector.pop(i, 1);
+        targetSelector.splice(i, 1);
         break;
       }
       _results.push(i++);
@@ -139,6 +154,9 @@
   _bind = function(evt, selector, cb, remove) {
     var addEvent, checkType, evLen, i, id, _getGlobalCb;
 
+    if (!this.element) {
+      return;
+    }
     checkType = function(type, arg) {
       var object;
 
@@ -171,11 +189,11 @@
       };
     };
     while (i < evLen) {
-      if (!_handlers[id] || !_handlers[id][evt[i]]) {
-        addEvent(this, evt[i], _getGlobalCb(evt[i]));
-      }
       if (remove) {
         _removeHandler(this, evt[i], selector, cb);
+      }
+      if (!_handlers[id] || !_handlers[id][evt[i]]) {
+        addEvent(this, evt[i], _getGlobalCb(evt[i]));
       }
       _addHandler(this, evt[i], selector, cb);
       i++;
