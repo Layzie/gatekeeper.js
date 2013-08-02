@@ -1,0 +1,3 @@
+[submodule "gator"]
+	path = gator
+	url = git@github.com:ccampbell/gator.git
