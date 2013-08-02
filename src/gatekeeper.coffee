@@ -35,6 +35,12 @@ do ->
     _handlers[gk.id][evt][selector].push cb
 
   _removeHandler = (gk, evt, selector, cb) ->
+    return if not _handlers[gk.id]
+
+    if not event
+      for own type of _handlers[gk.id]
+        _handlers[gk.id][type] = {}
+
     if not cb and not selector
       _handlers[gk.id][evt] = {}
       return
@@ -43,13 +49,15 @@ do ->
       delete _handlers[gk.id][evt][selector]
       return
 
+    return unless _handlers[gk.id][event][selector]
+
     i = 0
     targetSelector = _handlers[gk.id][evt][selector]
     handlerLen = targetSelector.length
 
     while i < handlerLen
       if targetSelector[i] is cb
-        targetSelector.pop i, 1
+        targetSelector.splice i, 1
         break
       i++
 
@@ -98,6 +106,8 @@ do ->
       i++
 
   _bind = (evt, selector, cb, remove) ->
+    return unless @element
+
     checkType = (type, arg) ->
       object = Object::toString.call(arg).slice 8, -1
 
@@ -122,11 +132,11 @@ do ->
         _handleEvent id, e, type
 
     while i < evLen
-      if not _handlers[id] or not _handlers[id][evt[i]]
-        addEvent @, evt[i], _getGlobalCb(evt[i])
-
       if remove
         _removeHandler @, evt[i], selector, cb
+
+      if not _handlers[id] or not _handlers[id][evt[i]]
+        addEvent @, evt[i], _getGlobalCb(evt[i])
 
       _addHandler @, evt[i], selector, cb
       i++
