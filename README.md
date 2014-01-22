@@ -25,3 +25,4 @@ or
 
 Please report [issues](https://github.com/Layzie/gatekeeper.js/issues).
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Layzie/gatekeeper.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
